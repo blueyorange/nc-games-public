@@ -55,7 +55,7 @@ const seed = async (data) => {
   await insertDataIntoTable(categoryData, "categories");
   await insertDataIntoTable(userData, "users");
   await insertDataIntoTable(reviewData, "reviews");
-  // await insertDataIntoTable(commentData, "comments");
+  await insertDataIntoTable(commentData, "comments");
 };
 
 module.exports = seed;

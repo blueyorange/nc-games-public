@@ -1,5 +1,5 @@
 CREATE TABLE reviews (
-        review_id INT PRIMARY KEY,
+        review_id SERIAL PRIMARY KEY,
         title TEXT,
         review_body TEXT,
         designer TEXT,
