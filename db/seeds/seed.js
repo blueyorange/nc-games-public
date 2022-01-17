@@ -1,6 +1,3 @@
-const db = require("../connection");
-const format = require("pg-format");
-const fs = require("fs/promises");
 const {
   dropTables,
   createTables,
@@ -13,7 +10,6 @@ const seed = async (data) => {
   await dropTables(tableNamesInDropOrder);
   const tableNamesInCreateOrder = tableNamesInDropOrder.reverse();
   await createTables(tableNamesInCreateOrder);
-
   await insertDataIntoTable(categoryData, "categories");
   await insertDataIntoTable(userData, "users");
   await insertDataIntoTable(reviewData, "reviews");

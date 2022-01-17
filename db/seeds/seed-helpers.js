@@ -31,9 +31,7 @@ const insertDataIntoTable = async (data, tableName) => {
   const columnNameString = columnNames.reduce(
     (output, current) => `${output}, ${current}`
   );
-  console.log(columnNameString);
   const formattedValues = data.map((obj) => Object.values(obj));
-  //console.log(formattedValues);
   const sql = format(
     `INSERT INTO ${tableName} (${columnNameString}) VALUES %L`,
     formattedValues
