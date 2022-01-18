@@ -36,7 +36,6 @@ const insertDataIntoTable = async (data, tableName) => {
     `INSERT INTO ${tableName} (${columnNameString}) VALUES %L`,
     formattedValues
   );
-  console.log(sql);
   try {
     await db.query(sql);
   } catch (err) {
