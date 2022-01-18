@@ -29,3 +29,23 @@ describe("GET /api/categories", () => {
       });
   });
 });
+
+describe("GET /api/reviews/:review_id", () => {
+  it("responds with an object", () => {
+    return request(app)
+      .get("/api//reviews/1")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.reviews).toBeInstanceOf(Object);
+      });
+  });
+  it("matches the test data", () => {
+    const testReview = reviewData.filter((review) => review_id === 1);
+    return request(app)
+      .get("/api/reviews/1")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.categories).toEqual(testReview);
+      });
+  });
+});

@@ -7,6 +7,6 @@ const { getReviewById } = require("./controllers/reviews.controllers");
 
 app.get("/api/categories", getCategories);
 
-//app.get("/api/reviews/:review_id", getReviewById);
+app.get("/api/reviews/:review_id", getReviewById);
 
 module.exports = app;
