@@ -42,13 +42,10 @@ describe("GET /api/reviews/:review_id", () => {
       .get("/api/reviews/1")
       .expect(200)
       .then((res) => {
-        console.log(res.body.review);
         expect(res.body.review).toBeInstanceOf(Object);
       });
   });
   it("matches the test data", () => {
-    const testReview = reviewData.filter((review) => review.review_id === 1);
-    console.log(reviewData, testReview);
     return request(app)
       .get("/api/reviews/1")
       .expect(200)
@@ -65,5 +62,16 @@ describe("GET /api/reviews/:review_id", () => {
           created_at: expect.any(String),
         });
       });
+  });
+  it("returns status 400 bad request", () => {
+    return request(app)
+      .get("/api/reviews/invalid_id")
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("Bad request: invalid id");
+      });
+  });
+  it("returns status 404 not found", () => {
+    return request(app).get("/api/reviews/999999").expect(404);
   });
 });
