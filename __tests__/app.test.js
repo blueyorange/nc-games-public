@@ -33,10 +33,10 @@ describe("GET /api/categories", () => {
 describe("GET /api/reviews/:review_id", () => {
   it("responds with an object", () => {
     return request(app)
-      .get("/api//reviews/1")
+      .get("/api/reviews/1")
       .expect(200)
       .then((res) => {
-        expect(res.body.reviews).toBeInstanceOf(Object);
+        expect(res.body.review).toBeInstanceOf(Object);
       });
   });
   it("matches the test data", () => {
@@ -45,7 +45,7 @@ describe("GET /api/reviews/:review_id", () => {
       .get("/api/reviews/1")
       .expect(200)
       .then((res) => {
-        expect(res.body.categories).toEqual(testReview);
+        expect(res.body.review).toEqual(testReview);
       });
   });
 });
