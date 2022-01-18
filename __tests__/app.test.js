@@ -75,3 +75,21 @@ describe("GET /api/reviews/:review_id", () => {
     return request(app).get("/api/reviews/999999").expect(404);
   });
 });
+
+describe("PATCH /api/reviews/:review_id", () => {
+  const testReview = reviewData[0];
+  const body = {
+    title: "Agricoola",
+    review_body: "A great farmyard game for all the family!",
+  };
+  const amendedReview = { ...testReview, ...body, review_id: 1 };
+  it("amends the title and review_body", () => {
+    return request(app)
+      .patch("/api/reviews/1")
+      .send(body)
+      .expect(200)
+      .then((res) => {
+        expect(res.body.review).toEqual(amendedReview);
+      });
+  });
+});
