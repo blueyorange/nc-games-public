@@ -26,6 +26,12 @@ describe("GET /api/categories", () => {
       .expect(200)
       .then((res) => {
         expect(res.body.categories).toEqual(categoryData);
+        res.body.categories.forEach((category) => {
+          expect(category).toMatchObject({
+            slug: expect.any(String),
+            description: expect.any(String),
+          });
+        });
       });
   });
 });
@@ -36,16 +42,28 @@ describe("GET /api/reviews/:review_id", () => {
       .get("/api/reviews/1")
       .expect(200)
       .then((res) => {
+        console.log(res.body.review);
         expect(res.body.review).toBeInstanceOf(Object);
       });
   });
   it("matches the test data", () => {
-    const testReview = reviewData.filter((review) => review_id === 1);
+    const testReview = reviewData.filter((review) => review.review_id === 1);
+    console.log(reviewData, testReview);
     return request(app)
       .get("/api/reviews/1")
       .expect(200)
       .then((res) => {
-        expect(res.body.review).toEqual(testReview);
+        expect(res.body.review).toMatchObject({
+          review_id: expect.any(Number),
+          title: expect.any(String),
+          review_body: expect.any(String),
+          designer: expect.any(String),
+          review_img_url: expect.any(String),
+          votes: expect.any(Number),
+          category: expect.any(String),
+          owner: expect.any(String),
+          created_at: expect.any(String),
+        });
       });
   });
 });
