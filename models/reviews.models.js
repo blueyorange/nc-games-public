@@ -16,6 +16,9 @@ exports.amendReview = (review_id, inc_votes) => {
     inc_votes,
     review_id
   );
-  console.log(sql);
   return db.query(sql).then((result) => result.rows[0]);
+};
+
+exports.selectAllReviews = () => {
+  return db.query(`SELECT * FROM reviews`).then((result) => result.rows);
 };

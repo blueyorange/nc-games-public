@@ -119,3 +119,26 @@ describe("PATCH /api/reviews/:review_id", () => {
       });
   });
 });
+
+describe("GET /api/reviews", () => {
+  it("returns all reviews as an array", () => {
+    return request(app)
+      .get("/api/reviews/")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.reviews).toBeInstanceOf(Array);
+        res.body.reviews.forEach((review) => {
+          expect(review).toMatchObject({
+            title: expect.any(String),
+            designer: expect.any(String),
+            owner: expect.any(String),
+            review_img_url: expect.any(String),
+            review_body: expect.any(String),
+            category: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+          });
+        });
+      });
+  });
+});
