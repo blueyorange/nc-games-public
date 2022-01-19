@@ -16,7 +16,8 @@ exports.getReviewById = (req, res, next) => {
 
 exports.updateReviewById = (req, res, next) => {
   const { review_id } = req.params;
-  amendReview(review_id, req.body)
+  const { inc_votes } = req.body;
+  amendReview(review_id, inc_votes)
     .then((review) => {
       if (review === undefined) {
         console.log("NOT FOUND");

@@ -77,18 +77,18 @@ describe("GET /api/reviews/:review_id", () => {
 });
 
 describe("PATCH /api/reviews/:review_id", () => {
+  const inc_votes = 3;
   const testReview = reviewData[0];
   const body = {
-    title: "Agricoola",
-    review_body: "A great farmyard game for all the family!",
+    inc_votes: inc_votes,
   };
   const amendedReview = {
     ...testReview,
-    ...body,
-    review_id: 1,
+    votes: testReview.votes + inc_votes,
     created_at: testReview.created_at.toISOString(),
+    review_id: 1,
   };
-  it("amends the title and review_body", () => {
+  it("increases the number of votes", () => {
     return request(app)
       .patch("/api/reviews/1")
       .send(body)
@@ -99,7 +99,6 @@ describe("PATCH /api/reviews/:review_id", () => {
   });
   it("rejects a request with incorrect field", () => {
     const body = {
-      title: "Agricoola",
       invalid_field: "A great farmyard game for all the family!",
     };
     return request(app)
@@ -107,7 +106,7 @@ describe("PATCH /api/reviews/:review_id", () => {
       .send(body)
       .expect(400)
       .then((res) => {
-        expect(res.body.msg).toBe("field not allowed");
+        expect(res.body.msg).toBe("invalid field");
       });
   });
 });
