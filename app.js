@@ -7,10 +7,12 @@ const {
   getReviewById,
   updateReviewById,
   getAllReviews,
+} = require("./controllers/reviews.controllers");
+const {
   getCommentsByReviewId,
   postComment,
   deleteCommentById,
-} = require("./controllers/reviews.controllers");
+} = require("./controllers/comments.controllers");
 
 app.use(express.json());
 app.get("/api/categories", getCategories);
