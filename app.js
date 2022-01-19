@@ -1,27 +1,9 @@
 const express = require("express");
-const res = require("express/lib/response");
 app = express();
-
-const { getCategories } = require("./controllers/categories.controllers");
-const {
-  getReviewById,
-  updateReviewById,
-  getAllReviews,
-} = require("./controllers/reviews.controllers");
-const {
-  getCommentsByReviewId,
-  postComment,
-  deleteCommentById,
-} = require("./controllers/comments.controllers");
+const apiRouter = require("./routers/api.routers");
 
 app.use(express.json());
-app.get("/api/categories", getCategories);
-app.get("/api/reviews/:review_id", getReviewById);
-app.patch("/api/reviews/:review_id", updateReviewById);
-app.get("/api/reviews/", getAllReviews);
-app.get("/api/reviews/:review_id/comments/", getCommentsByReviewId);
-app.post("/api/reviews/:review_id/comments", postComment);
-app.delete("/api/comments/:comment_id", deleteCommentById);
+app.use("/api", apiRouter);
 app.all("*", (req, res) => {
   res.status(400).send({ msg: "invalid endpoint" });
 });

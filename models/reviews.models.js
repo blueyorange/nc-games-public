@@ -22,23 +22,3 @@ exports.amendReview = (review_id, inc_votes) => {
 exports.selectAllReviews = () => {
   return db.query(`SELECT * FROM reviews`).then((result) => result.rows);
 };
-
-exports.selectCommentsByReviewId = (review_id) => {
-  return db
-    .query(`SELECT * FROM comments WHERE review_id=$1`, [review_id])
-    .then((result) => result.rows);
-};
-
-exports.createComment = (review_id, author, body) => {
-  const sql = format(
-    `INSERT INTO comments (review_id, author, body) VALUES (%L) RETURNING *`,
-    [review_id, author, body]
-  );
-  return db.query(sql).then((result) => result.rows[0]);
-};
-
-exports.deleteComment = (comment_id) => {
-  return db
-    .query(`DELETE FROM comments WHERE comment_id=$1`, [comment_id])
-    .then((result) => console.log(result));
-};
