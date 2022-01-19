@@ -82,7 +82,13 @@ describe("PATCH /api/reviews/:review_id", () => {
     title: "Agricoola",
     review_body: "A great farmyard game for all the family!",
   };
-  const amendedReview = { ...testReview, ...body, review_id: 1 };
+  const amendedReview = {
+    ...testReview,
+    ...body,
+    review_id: 1,
+    created_at: testReview.created_at.toISOString(),
+  };
+  console.log(typeof testReview.created_at);
   it("amends the title and review_body", () => {
     return request(app)
       .patch("/api/reviews/1")
