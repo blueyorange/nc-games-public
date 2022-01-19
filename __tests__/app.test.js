@@ -64,12 +64,7 @@ describe("GET /api/reviews/:review_id", () => {
       });
   });
   it("returns status 400 bad request", () => {
-    return request(app)
-      .get("/api/reviews/invalid_id")
-      .expect(400)
-      .then((res) => {
-        expect(res.body.msg).toBe("Bad request: invalid id");
-      });
+    return request(app).get("/api/reviews/invalid_id").expect(400);
   });
   it("returns status 404 not found", () => {
     return request(app).get("/api/reviews/999999").expect(404);
@@ -186,12 +181,12 @@ describe("POST /api/reviews/:review_id/comments/", () => {
         });
       });
   });
-  it("returns 404 not found for incorrect review id", () => {
+  it("returns 400 not found for incorrect review id", () => {
     const review_id = 999999;
     return request(app)
       .post(`/api/reviews/${review_id}/comments/`)
       .send(comment)
-      .expect(404);
+      .expect(400);
   });
   it("returns error 400 for invalid review id", () => {
     return request(app)
@@ -199,12 +194,12 @@ describe("POST /api/reviews/:review_id/comments/", () => {
       .send(comment)
       .expect(400);
   });
-  it("returns error 404 not found for invalid username", () => {
+  it("returns error 400 not found for invalid username", () => {
     let comment_invalid = { username: "invalid", body: "ooooh" };
     return request(app)
       .post(`/api/reviews/${review_id}/comments/`)
       .send(comment_invalid)
-      .expect(404);
+      .expect(400);
   });
 });
 
