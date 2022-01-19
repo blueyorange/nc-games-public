@@ -142,3 +142,25 @@ describe("GET /api/reviews", () => {
       });
   });
 });
+
+describe("GET /api/reviews/:review_id/comments", () => {
+  it("returns an array of comments", () => {
+    const review_id = 3;
+    const expectedComments = commentData
+      .filter((comment) => comment.review_id === review_id)
+      .map((comment) => {
+        return { ...comment, created_at: comment.created_at.toISOString() };
+      });
+    return request(app)
+      .get(`/api/reviews/${review_id}/comments/`)
+      .expect(200)
+      .then((res) => {
+        expect(res.body.comments).toBeInstanceOf(Array);
+        const comments = res.body.comments.map((comment) => {
+          delete comment.comment_id;
+          return comment;
+        });
+        expect(comments).toEqual(expectedComments);
+      });
+  });
+});

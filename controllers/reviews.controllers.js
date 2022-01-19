@@ -2,6 +2,7 @@ const {
   selectReview,
   amendReview,
   selectAllReviews,
+  selectCommentsByReviewId,
 } = require("../models/reviews.models");
 
 exports.getReviewById = (req, res, next) => {
@@ -9,7 +10,6 @@ exports.getReviewById = (req, res, next) => {
   selectReview(review_id)
     .then((review) => {
       if (review === undefined) {
-        console.log("NOT FOUND");
         return Promise.reject({ status: 404, msg: "not found" });
       } else {
         res.status(200).send({ review });
@@ -24,7 +24,6 @@ exports.updateReviewById = (req, res, next) => {
   amendReview(review_id, inc_votes)
     .then((review) => {
       if (review === undefined) {
-        console.log("NOT FOUND");
         return Promise.reject({ status: 404, msg: "not found" });
       } else {
         res.status(200).send({ review });
@@ -37,4 +36,16 @@ exports.getAllReviews = (req, res, next) => {
   selectAllReviews()
     .then((reviews) => res.status(200).send({ reviews }))
     .catch((err) => next(err));
+};
+
+exports.getCommentsByReviewId = (req, res, next) => {
+  const { review_id } = req.params;
+  selectCommentsByReviewId(review_id)
+    .then((comments) => {
+      res.status(200).send({ comments });
+    })
+    .catch((err) => {
+      console.log(err);
+      next(err);
+    });
 };

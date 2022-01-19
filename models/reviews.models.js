@@ -22,3 +22,9 @@ exports.amendReview = (review_id, inc_votes) => {
 exports.selectAllReviews = () => {
   return db.query(`SELECT * FROM reviews`).then((result) => result.rows);
 };
+
+exports.selectCommentsByReviewId = (review_id) => {
+  return db
+    .query(`SELECT * FROM comments WHERE review_id=$1`, [review_id])
+    .then((result) => result.rows);
+};
