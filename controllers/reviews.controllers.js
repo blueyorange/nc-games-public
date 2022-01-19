@@ -3,6 +3,7 @@ const {
   amendReview,
   selectAllReviews,
   selectCommentsByReviewId,
+  createComment,
 } = require("../models/reviews.models");
 
 exports.getReviewById = (req, res, next) => {
@@ -48,4 +49,12 @@ exports.getCommentsByReviewId = (req, res, next) => {
       console.log(err);
       next(err);
     });
+};
+
+exports.postComment = (req, res, next) => {
+  const { review_id } = req.params;
+  const { username, body } = req.body;
+  createComment(review_id, username, body)
+    .then((comment) => res.status(200).send({ comment }))
+    .catch((err) => next(err));
 };

@@ -164,3 +164,46 @@ describe("GET /api/reviews/:review_id/comments", () => {
       });
   });
 });
+
+describe("POST /api/reviews/:review_id/comments/", () => {
+  const review_id = 1;
+  const comment = {
+    username: "mallionaire",
+    body: "i HATE this game.",
+  };
+  it("returns an array of comments from a review_id", () => {
+    return request(app)
+      .post(`/api/reviews/${review_id}/comments/`)
+      .send(comment)
+      .expect(200)
+      .then((res) => {
+        expect(res.body.comment).toMatchObject({
+          author: comment.username,
+          body: comment.body,
+          comment_id: expect.any(Number),
+          votes: 0,
+          created_at: expect.any(String),
+        });
+      });
+  });
+  it("returns 404 not found for incorrect review id", () => {
+    const review_id = 999999;
+    return request(app)
+      .post(`/api/reviews/${review_id}/comments/`)
+      .send(comment)
+      .expect(404);
+  });
+  it("returns error 400 for invalid review id", () => {
+    return request(app)
+      .post(`/api/reviews/:invalid_id/comments/`)
+      .send(comment)
+      .expect(400);
+  });
+  it("returns error 404 not found for invalid username", () => {
+    let comment_invalid = { username: "invalid", body: "ooooh" };
+    return request(app)
+      .post(`/api/reviews/${review_id}/comments/`)
+      .send(comment_invalid)
+      .expect(404);
+  });
+});

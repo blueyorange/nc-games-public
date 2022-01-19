@@ -28,3 +28,11 @@ exports.selectCommentsByReviewId = (review_id) => {
     .query(`SELECT * FROM comments WHERE review_id=$1`, [review_id])
     .then((result) => result.rows);
 };
+
+exports.createComment = async (review_id, author, body) => {
+  const sql = format(
+    `INSERT INTO comments (review_id, author, body) VALUES (%L) RETURNING *`,
+    [review_id, author, body]
+  );
+  return db.query(sql).then((result) => result.rows[0]);
+};
