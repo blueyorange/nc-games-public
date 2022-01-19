@@ -109,4 +109,13 @@ describe("PATCH /api/reviews/:review_id", () => {
         expect(res.body.msg).toBe("invalid field");
       });
   });
+  it("returns 404 not found", () => {
+    return request(app)
+      .patch("/api/reviews/99999")
+      .send(body)
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toBe("not found");
+      });
+  });
 });
