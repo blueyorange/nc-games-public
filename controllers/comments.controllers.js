@@ -27,8 +27,12 @@ exports.postComment = (req, res, next) => {
 exports.deleteCommentById = (req, res, next) => {
   const { comment_id } = req.params;
   deleteComment(comment_id)
-    .then(() => {
-      res.status(204).send();
+    .then(({ rowCount }) => {
+      if (rowCount === 0) {
+        return Promise.reject({ status: 404, msg: "comment not found" });
+      } else {
+        res.status(204).send();
+      }
     })
     .catch((err) => next(err));
 };

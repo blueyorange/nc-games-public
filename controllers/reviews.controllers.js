@@ -20,6 +20,9 @@ exports.getReviewById = (req, res, next) => {
 exports.updateReviewById = (req, res, next) => {
   const { review_id } = req.params;
   const { inc_votes } = req.body;
+  if (inc_votes === undefined) {
+    return next({ status: 400, msg: "invalid field" });
+  }
   amendReview(review_id, inc_votes)
     .then((review) => {
       if (review === undefined) {

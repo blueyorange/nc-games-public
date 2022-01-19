@@ -8,9 +8,9 @@ exports.selectReview = (review_id) => {
 };
 
 exports.amendReview = (review_id, inc_votes) => {
-  if (inc_votes === undefined) {
-    return Promise.reject({ status: 400, msg: "invalid field" });
-  }
+  // if (inc_votes === undefined) {
+  //   return Promise.reject({ status: 400, msg: "invalid field" });
+  // }
   const sql = format(
     `UPDATE reviews SET votes=votes+%L WHERE review_id=%L RETURNING *`,
     inc_votes,
