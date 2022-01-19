@@ -8,7 +8,6 @@ exports.selectReview = (review_id) => {
 };
 
 exports.amendReview = (review_id, data) => {
-  console.log("in model", data);
   const allowedFields = [
     "title",
     "designer",
@@ -18,22 +17,24 @@ exports.amendReview = (review_id, data) => {
     "category",
     "votes",
   ];
+  for (let key in data) {
+    if (!allowedFields.includes(key)) {
+      return Promise.reject({ status: 400, msg: "field not allowed" });
+    }
+  }
+  // filter out non-empty fields
   const definedFields = allowedFields.filter(
     (field) => data[field] !== undefined
   );
-  console.log(definedFields);
-  console.log(format(`title=%L`, data["title"]));
+  // create query sql
   const sql =
     "UPDATE reviews SET " +
     definedFields
-      .reduce((output, field) => {
-        let string = output + format(`%I=%L, `, field, data[field]);
-        console.log(string);
-        return string;
-      }, "")
+      .reduce(
+        (output, field) => output + format(`%I=%L, `, field, data[field]),
+        ""
+      )
       .slice(0, -2) +
     format(` WHERE review_id=%L RETURNING *;`, review_id);
-
-  console.log(sql);
   return db.query(sql).then((result) => result.rows[0]);
 };

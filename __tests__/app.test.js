@@ -88,7 +88,6 @@ describe("PATCH /api/reviews/:review_id", () => {
     review_id: 1,
     created_at: testReview.created_at.toISOString(),
   };
-  console.log(typeof testReview.created_at);
   it("amends the title and review_body", () => {
     return request(app)
       .patch("/api/reviews/1")
@@ -96,6 +95,19 @@ describe("PATCH /api/reviews/:review_id", () => {
       .expect(200)
       .then((res) => {
         expect(res.body.review).toEqual(amendedReview);
+      });
+  });
+  it("rejects a request with incorrect field", () => {
+    const body = {
+      title: "Agricoola",
+      invalid_field: "A great farmyard game for all the family!",
+    };
+    return request(app)
+      .patch("/api/reviews/1")
+      .send(body)
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("field not allowed");
       });
   });
 });
