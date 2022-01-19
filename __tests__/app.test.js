@@ -209,7 +209,7 @@ describe("POST /api/reviews/:review_id/comments/", () => {
 });
 
 describe("DELETE /api/comments/:comment_id", () => {
-  it("should return 200 and result in deleted entry", () => {
+  it("should return 204 and result in deleted entry", () => {
     const comment_id = 1;
     return request(app)
       .delete(`/api/comments/${comment_id}`)
@@ -223,5 +223,8 @@ describe("DELETE /api/comments/:comment_id", () => {
         // comment is deleted so should return empty query
         expect(commentQuery.rows).toEqual([]);
       });
+  });
+  it("status 404", () => {
+    return request(app).delete(`/api/comments/1000`).expect(404);
   });
 });
