@@ -4,6 +4,7 @@ const {
   selectAllReviews,
   selectCommentsByReviewId,
   createComment,
+  deleteComment,
 } = require("../models/reviews.models");
 
 exports.getReviewById = (req, res, next) => {
@@ -56,5 +57,15 @@ exports.postComment = (req, res, next) => {
   const { username, body } = req.body;
   createComment(review_id, username, body)
     .then((comment) => res.status(200).send({ comment }))
+    .catch((err) => next(err));
+};
+
+exports.deleteCommentById = (req, res, next) => {
+  const { comment_id } = req.params;
+  console.log("in controller", comment_id);
+  deleteComment(comment_id)
+    .then(() => {
+      res.status(204).send();
+    })
     .catch((err) => next(err));
 };

@@ -207,3 +207,21 @@ describe("POST /api/reviews/:review_id/comments/", () => {
       .expect(404);
   });
 });
+
+describe("DELETE /api/comments/:comment_id", () => {
+  it("should return 200 and result in deleted entry", () => {
+    const comment_id = 1;
+    return request(app)
+      .delete(`/api/comments/${comment_id}`)
+      .expect(204)
+      .then(async (res) => {
+        expect(res.body).toEqual({});
+        const commentQuery = await db.query(
+          `SELECT * FROM comments WHERE comment_id=$1`,
+          [comment_id]
+        );
+        // comment is deleted so should return empty query
+        expect(commentQuery.rows).toEqual([]);
+      });
+  });
+});

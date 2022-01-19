@@ -9,6 +9,7 @@ const {
   getAllReviews,
   getCommentsByReviewId,
   postComment,
+  deleteCommentById,
 } = require("./controllers/reviews.controllers");
 
 app.use(express.json());
@@ -18,6 +19,7 @@ app.patch("/api/reviews/:review_id", updateReviewById);
 app.get("/api/reviews/", getAllReviews);
 app.get("/api/reviews/:review_id/comments/", getCommentsByReviewId);
 app.post("/api/reviews/:review_id/comments", postComment);
+app.delete("/api/comments/:comment_id", deleteCommentById);
 app.all("*", (req, res) => {
   res.status(400).send({ msg: "invalid endpoint" });
 });
