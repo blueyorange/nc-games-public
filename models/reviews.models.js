@@ -22,6 +22,11 @@ exports.amendReview = (review_id, inc_votes) => {
   return db.query(sql).then((result) => result.rows[0]);
 };
 
-exports.selectAllReviews = () => {
-  return db.query(`SELECT * FROM reviews`).then((result) => result.rows);
+exports.selectAllReviews = (sort_by, order, category) => {
+  let sql = `SELECT * FROM reviews ORDER BY ${sort_by} ${order}`;
+  if (!category === undefined) {
+    sql += format(` WHERE category=%L`, category);
+  }
+  console.log(sql);
+  return db.query(sql).then((result) => result.rows);
 };

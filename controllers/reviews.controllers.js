@@ -36,7 +36,30 @@ exports.updateReviewById = (req, res, next) => {
 };
 
 exports.getAllReviews = (req, res, next) => {
-  selectAllReviews()
+  let { sort_by, order, category } = req.query;
+  if (order === undefined) order = "ASC";
+  if (!["asc", "desc"].includes(order.toLowerCase())) {
+    next({ status: 400, msg: "bad query: order_by incorrect query syntax" });
+  }
+  console.log("in the controller");
+  if (sort_by === undefined) sort_by = "title";
+  const columns = [
+    "title",
+    "designer",
+    "owner",
+    "review_img_url",
+    "review_body",
+    "category",
+    "created_at",
+    "votes",
+  ];
+  if (!columns.includes(sort_by)) {
+    next({
+      status: 400,
+      msg: "bad query: sort_by does not match existing column",
+    });
+  }
+  selectAllReviews(sort_by, order, category)
     .then((reviews) => res.status(200).send({ reviews }))
     .catch((err) => next(err));
 };

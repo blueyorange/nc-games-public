@@ -160,6 +160,34 @@ describe("GET /api/reviews", () => {
         });
       });
   });
+  const sort_by = "designer";
+  const reviewsSorted = reviewData
+    .map((review) => {
+      return { ...review, created_at: review.created_at.toISOString() };
+    })
+    .sort((a, b) => (a[sort_by] < b[sort_by] ? -1 : +1));
+  it("returns reviews sorted by column", () => {
+    return request(app)
+      .get(`/api/reviews/?sort_by=${sort_by}`)
+      .expect(200)
+      .then((res) => {
+        const { reviews } = res.body;
+        for (let i = 0; i < reviews.length; i++) {
+          let reviewToCheck = reviews[i];
+          delete reviewToCheck.review_id;
+          expect(reviewToCheck).toEqual(reviewsSorted[i]);
+        }
+      });
+  });
+  it("returns 400 bad request for incorrect column in sort_by", () => {
+    return request(app).get(`/api/reviews/?sort_by=invalid_sort`).expect(400);
+  });
+  it("returns 400 bad request for not asc/desc in order", () => {
+    return request(app).get(`/api/reviews/?order=invalid`).expect(400);
+  });
+  // it("returns 400 bad request for category doesn't exist", () => {
+  //   return request(app).get(`/api/reviews/?category=UHBJHV&*&`).expect(400);
+  // });
 });
 
 describe("GET /api/reviews/:review_id/comments", () => {
