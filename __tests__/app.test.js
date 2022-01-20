@@ -11,6 +11,11 @@ afterAll(() => db.end());
 
 const { categoryData, reviewData, commentData, userData } = testData;
 
+describe("GET /api", () => {
+  it("serves a description of the api", () => {
+    return request(app).get("/api").expect(200);
+  });
+});
 describe("GET /api/categories", () => {
   it("responds with an array", () => {
     return request(app)

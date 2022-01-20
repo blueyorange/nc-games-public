@@ -27,6 +27,5 @@ exports.selectAllReviews = (sort_by, order, category) => {
   if (!category === undefined) {
     sql += format(` WHERE category=%L`, category);
   }
-  console.log(sql);
   return db.query(sql).then((result) => result.rows);
 };
