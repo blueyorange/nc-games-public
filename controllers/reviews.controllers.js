@@ -42,7 +42,7 @@ exports.getAllReviews = (req, res, next) => {
     next({ status: 400, msg: "bad query: order_by incorrect query syntax" });
   }
   console.log("in the controller");
-  if (sort_by === undefined) sort_by = "title";
+  if (sort_by === undefined) sort_by = "review_id";
   const columns = [
     "review_id",
     "title",
