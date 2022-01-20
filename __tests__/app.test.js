@@ -130,8 +130,15 @@ describe("PATCH /api/reviews/:review_id", () => {
         expect(res.body.msg).toBe("not found");
       });
   });
+  it("returns 400 for invalid inc_votes", () => {
+    const invalidBody = { inc_votes: "yourmama" };
+    return request(app).patch("/api/reviews/1").send(invalidBody).expect(400);
+  });
+  it("returns 400 for invalid additional fields", () => {
+    const invalidBody = { inc_votes: 5, name: "Mitch" };
+    return request(app).patch("/api/reviews/1").send(invalidBody).expect(400);
+  });
 });
-
 describe("GET /api/reviews", () => {
   it("returns all reviews as an array", () => {
     return request(app)
