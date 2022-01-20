@@ -78,13 +78,29 @@ describe("PATCH /api/reviews/:review_id", () => {
   const body = {
     inc_votes: inc_votes,
   };
-  const amendedReview = {
+  let amendedReview = {
     ...testReview,
-    votes: testReview.votes + inc_votes,
+    votes: testReview.votes + body.inc_votes,
     created_at: testReview.created_at.toISOString(),
     review_id: 1,
   };
   it("increases the number of votes", () => {
+    return request(app)
+      .patch("/api/reviews/1")
+      .send(body)
+      .expect(200)
+      .then((res) => {
+        expect(res.body.review).toEqual(amendedReview);
+      });
+  });
+  body.inc_votes = -1;
+  amendedReview = {
+    ...testReview,
+    votes: testReview.votes + body.inc_votes,
+    created_at: testReview.created_at.toISOString(),
+    review_id: 1,
+  };
+  it("decreases the number of votes", () => {
     return request(app)
       .patch("/api/reviews/1")
       .send(body)
