@@ -44,6 +44,7 @@ exports.getAllReviews = (req, res, next) => {
   console.log("in the controller");
   if (sort_by === undefined) sort_by = "title";
   const columns = [
+    "review_id",
     "title",
     "designer",
     "owner",
