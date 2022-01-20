@@ -8,7 +8,8 @@ exports.getReviewById = (req, res, next) => {
   const { review_id } = req.params;
   selectReview(review_id)
     .then((review) => {
-      if (review === undefined) {
+      // review = {comment_count:0} for review not found
+      if (review.review_id === undefined) {
         return Promise.reject({ status: 404, msg: "not found" });
       } else {
         res.status(200).send({ review });
