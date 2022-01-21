@@ -16,6 +16,10 @@ git clone https://github.com/blueyorange/be-nc-games.git
 Install dependencies using
 `npm install`
 
+Create .env files in root:
+.env.development should contain the line `PGDATABASE=nc_games`
+.env.test should contain the line `PGDATABASE=nc_games_test`
+
 Run tests with `npm run test`
 
 Seed local db with `npm run seed`
