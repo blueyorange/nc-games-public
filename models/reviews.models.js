@@ -29,8 +29,5 @@ exports.selectAllReviews = (sort_by, order, category) => {
   }
   sql += ` ORDER BY ${sort_by} ${order};`;
   console.log(sql);
-  return db
-    .query(sql)
-    .then((result) => result.rows)
-    .catch((err) => console.log(err));
+  return db.query(sql).then((result) => result.rows);
 };

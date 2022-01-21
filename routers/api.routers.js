@@ -8,7 +8,8 @@ apiRouter.get("/", (_, res, next) => {
   const path = `${__dirname}/../endpoints.json`;
   fs.readFile(path, "utf-8")
     .then((contents) => {
-      res.status(200).send(contents);
+      const endpoints = JSON.parse(contents);
+      res.status(200).send(endpoints);
     })
     .catch((err) => {
       next(err);
