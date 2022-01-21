@@ -9,21 +9,20 @@ exports.getReviewById = (req, res, next) => {
   selectReview(review_id)
     .then((review) => {
       // review = {comment_count:0} for review not found
-      if (review.review_id === undefined) {
+      if (review === undefined) {
         return Promise.reject({ status: 404, msg: "not found" });
       } else {
         res.status(200).send({ review });
       }
     })
-    .catch((err) => next(err));
+    .catch((err) => {
+      next(err);
+    });
 };
 
 exports.updateReviewById = (req, res, next) => {
   const { review_id } = req.params;
-  const { inc_votes } = req.body;
-  if (inc_votes === undefined || Object.keys(req.body).length !== 1) {
-    return next({ status: 400, msg: "invalid field" });
-  }
+  const inc_votes = req.body.inc_votes ? req.body.inc_votes : 0;
   amendReview(review_id, inc_votes)
     .then((review) => {
       if (review === undefined) {

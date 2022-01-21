@@ -63,55 +63,43 @@ describe("GET /api/reviews/:review_id", () => {
 });
 
 describe("PATCH /api/reviews/:review_id", () => {
-  const inc_votes = 3;
-  const testReview = reviewData[0];
-  const body = {
-    inc_votes: inc_votes,
-  };
-  let amendedReview = {
-    ...testReview,
-    votes: testReview.votes + body.inc_votes,
-    created_at: testReview.created_at.toISOString(),
-    review_id: 1,
-  };
   it("increases the number of votes when valid body posted", () => {
-    return request(app)
-      .patch("/api/reviews/1")
-      .send(body)
-      .expect(200)
-      .then((res) => {
-        expect(res.body.review).toEqual(amendedReview);
-      });
-  });
-  body.inc_votes = -1;
-  amendedReview = {
-    ...testReview,
-    votes: testReview.votes + body.inc_votes,
-    created_at: testReview.created_at.toISOString(),
-    review_id: 1,
-  };
-  it("decreases the number of votes when valid body posted", () => {
-    return request(app)
-      .patch("/api/reviews/1")
-      .send(body)
-      .expect(200)
-      .then((res) => {
-        expect(res.body.review).toEqual(amendedReview);
-      });
-  });
-  it("rejects a request with incorrect field in body of POST request", () => {
+    const inc_votes = 3;
+    const testReview = reviewData[0];
+    const newVotes = testReview.votes + inc_votes;
     const body = {
-      invalid_field: "A great farmyard game for all the family!",
+      inc_votes,
     };
     return request(app)
       .patch("/api/reviews/1")
       .send(body)
-      .expect(400)
+      .expect(200)
       .then((res) => {
-        expect(res.body.msg).toBe("invalid field");
+        expect(res.body.review.votes).toEqual(newVotes);
       });
   });
+
+  it("decreases the number of votes when valid body posted", () => {
+    const inc_votes = -3;
+    const testReview = reviewData[0];
+    const newVotes = testReview.votes + inc_votes;
+    const body = {
+      inc_votes,
+    };
+    return request(app)
+      .patch("/api/reviews/1")
+      .send(body)
+      .expect(200)
+      .then((res) => {
+        expect(res.body.review.votes).toEqual(newVotes);
+      });
+  });
+
   it("returns 404 not found for non-existant review id", () => {
+    const inc_votes = -3;
+    const body = {
+      inc_votes,
+    };
     return request(app)
       .patch("/api/reviews/99999")
       .send(body)
@@ -120,13 +108,41 @@ describe("PATCH /api/reviews/:review_id", () => {
         expect(res.body.msg).toBe("not found");
       });
   });
+
   it("returns 400 for invalid inc_votes", () => {
     const invalidBody = { inc_votes: "yourmama" };
     return request(app).patch("/api/reviews/1").send(invalidBody).expect(400);
   });
-  it("returns 400 for invalid additional fields in body", () => {
-    const invalidBody = { inc_votes: 5, name: "Mitch" };
-    return request(app).patch("/api/reviews/1").send(invalidBody).expect(400);
+
+  it("returns 200 for invalid additional fields in body", () => {
+    const bodyWithExtraField = { inc_votes: 5, name: "Mitch" };
+    return request(app)
+      .patch("/api/reviews/1")
+      .send(bodyWithExtraField)
+      .expect(200);
+  });
+
+  it("returns status 400 for invalid review_id", () => {
+    body = {};
+    return request(app).patch("/api/reviews/invalid_id").send(body).expect(400);
+  });
+
+  it("returns status 200 for missing inc_votes key and has no effect on review", async () => {
+    const body = {};
+    const review = await request(app)
+      .get("/api/reviews/2")
+      .then((res) => {
+        let review = res.body.review;
+        delete review.comment_count;
+        return review;
+      });
+    return request(app)
+      .patch("/api/reviews/2")
+      .send(body)
+      .expect(200)
+      .then((res) => {
+        expect(res.body.review).toEqual(review);
+      });
   });
 });
 
@@ -158,6 +174,7 @@ describe("GET /api/reviews", () => {
       return { ...review, created_at: review.created_at.toISOString() };
     })
     .sort((a, b) => (a[sort_by] < b[sort_by] ? -1 : +1));
+
   it("returns reviews sorted by column", () => {
     return request(app)
       .get(`/api/reviews/?sort_by=${sort_by}`)
@@ -167,16 +184,21 @@ describe("GET /api/reviews", () => {
         for (let i = 0; i < reviews.length; i++) {
           let reviewToCheck = reviews[i];
           delete reviewToCheck.review_id;
-          expect(reviewToCheck).toEqual(reviewsSorted[i]);
+          expect(reviewToCheck.review_body).toEqual(
+            reviewsSorted[i].review_body
+          );
         }
       });
   });
+
   it("returns 400 bad request for incorrect column in sort_by", () => {
     return request(app).get(`/api/reviews/?sort_by=invalid_sort`).expect(400);
   });
+
   it("returns 400 bad request for not asc/desc in order", () => {
     return request(app).get(`/api/reviews/?order=invalid`).expect(400);
   });
+
   it("returns reviews matching category", () => {
     const category = "dexterity";
     const matchingReviews = reviewData
@@ -192,6 +214,7 @@ describe("GET /api/reviews", () => {
         for (let i = 0; i < reviews.length; i++) {
           let reviewToCheck = reviews[i];
           delete reviewToCheck.review_id;
+          delete reviewToCheck.comment_count;
           expect(reviewToCheck).toEqual(matchingReviews[i]);
         }
       });
