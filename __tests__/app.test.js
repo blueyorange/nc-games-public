@@ -17,20 +17,13 @@ describe("GET /api", () => {
   });
 });
 describe("GET /api/categories", () => {
-  it("responds with an array", () => {
-    return request(app)
-      .get("/api/categories")
-      .expect(200)
-      .then((res) => {
-        expect(res.body.categories).toBeInstanceOf(Array);
-      });
-  });
-  it("matches the test data", () => {
+  it("matches the test data returns an array of objects with matching fields", () => {
     return request(app)
       .get("/api/categories")
       .expect(200)
       .then((res) => {
         expect(res.body.categories).toEqual(categoryData);
+        expect(res.body.categories.length).toBeGreaterThan(0);
         res.body.categories.forEach((category) => {
           expect(category).toMatchObject({
             slug: expect.any(String),
@@ -42,15 +35,7 @@ describe("GET /api/categories", () => {
 });
 
 describe("GET /api/reviews/:review_id", () => {
-  it("responds with an object", () => {
-    return request(app)
-      .get("/api/reviews/1")
-      .expect(200)
-      .then((res) => {
-        expect(res.body.review).toBeInstanceOf(Object);
-      });
-  });
-  it("matches the test data", () => {
+  it("matches the test data in form and content (an array of objects)", () => {
     return request(app)
       .get("/api/reviews/1")
       .expect(200)
@@ -69,10 +54,10 @@ describe("GET /api/reviews/:review_id", () => {
         });
       });
   });
-  it("returns status 400 bad request", () => {
+  it("returns status 400 bad request for invalid review id", () => {
     return request(app).get("/api/reviews/invalid_id").expect(400);
   });
-  it("returns status 404 not found", () => {
+  it("returns status 404 not found for non existant review id", () => {
     return request(app).get("/api/reviews/999999").expect(404);
   });
 });
@@ -89,7 +74,7 @@ describe("PATCH /api/reviews/:review_id", () => {
     created_at: testReview.created_at.toISOString(),
     review_id: 1,
   };
-  it("increases the number of votes", () => {
+  it("increases the number of votes when valid body posted", () => {
     return request(app)
       .patch("/api/reviews/1")
       .send(body)
@@ -105,7 +90,7 @@ describe("PATCH /api/reviews/:review_id", () => {
     created_at: testReview.created_at.toISOString(),
     review_id: 1,
   };
-  it("decreases the number of votes", () => {
+  it("decreases the number of votes when valid body posted", () => {
     return request(app)
       .patch("/api/reviews/1")
       .send(body)
@@ -114,7 +99,7 @@ describe("PATCH /api/reviews/:review_id", () => {
         expect(res.body.review).toEqual(amendedReview);
       });
   });
-  it("rejects a request with incorrect field", () => {
+  it("rejects a request with incorrect field in body of POST request", () => {
     const body = {
       invalid_field: "A great farmyard game for all the family!",
     };
@@ -126,7 +111,7 @@ describe("PATCH /api/reviews/:review_id", () => {
         expect(res.body.msg).toBe("invalid field");
       });
   });
-  it("returns 404 not found", () => {
+  it("returns 404 not found for non-existant review id", () => {
     return request(app)
       .patch("/api/reviews/99999")
       .send(body)
@@ -139,19 +124,20 @@ describe("PATCH /api/reviews/:review_id", () => {
     const invalidBody = { inc_votes: "yourmama" };
     return request(app).patch("/api/reviews/1").send(invalidBody).expect(400);
   });
-  it("returns 400 for invalid additional fields", () => {
+  it("returns 400 for invalid additional fields in body", () => {
     const invalidBody = { inc_votes: 5, name: "Mitch" };
     return request(app).patch("/api/reviews/1").send(invalidBody).expect(400);
   });
 });
 
 describe("GET /api/reviews", () => {
-  it("returns all reviews as an array", () => {
+  it("returns an array of objects with matching fields", () => {
     return request(app)
       .get("/api/reviews/")
       .expect(200)
       .then((res) => {
         expect(res.body.reviews).toBeInstanceOf(Array);
+        expect(res.body.reviews.length).toBeGreaterThan(0);
         res.body.reviews.forEach((review) => {
           expect(review).toMatchObject({
             title: expect.any(String),
@@ -296,7 +282,7 @@ describe("DELETE /api/comments/:comment_id", () => {
         expect(commentQuery.rows).toEqual([]);
       });
   });
-  it("status 404", () => {
+  it("status 404 for invalid comment_id", () => {
     return request(app).delete(`/api/comments/1000`).expect(404);
   });
 });
