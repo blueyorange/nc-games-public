@@ -39,9 +39,11 @@ exports.getAllReviews = (req, res, next) => {
   let { sort_by, order, category } = req.query;
   if (order === undefined) order = "ASC";
   if (!["asc", "desc"].includes(order.toLowerCase())) {
-    next({ status: 400, msg: "bad query: order_by incorrect query syntax" });
+    return next({
+      status: 400,
+      msg: "bad order by query",
+    });
   }
-  console.log("in the controller");
   if (sort_by === undefined) sort_by = "review_id";
   const columns = [
     "review_id",
@@ -57,7 +59,7 @@ exports.getAllReviews = (req, res, next) => {
   if (!columns.includes(sort_by)) {
     next({
       status: 400,
-      msg: "bad query: sort_by does not match existing column",
+      msg: "bad sort by query",
     });
   }
   selectAllReviews(sort_by, order, category)

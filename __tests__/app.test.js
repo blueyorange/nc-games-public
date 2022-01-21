@@ -144,6 +144,7 @@ describe("PATCH /api/reviews/:review_id", () => {
     return request(app).patch("/api/reviews/1").send(invalidBody).expect(400);
   });
 });
+
 describe("GET /api/reviews", () => {
   it("returns all reviews as an array", () => {
     return request(app)
@@ -189,6 +190,25 @@ describe("GET /api/reviews", () => {
   });
   it("returns 400 bad request for not asc/desc in order", () => {
     return request(app).get(`/api/reviews/?order=invalid`).expect(400);
+  });
+  it("returns reviews matching category", () => {
+    const category = "dexterity";
+    const matchingReviews = reviewData
+      .filter((review) => review.category === category)
+      .map((review) => {
+        return { ...review, created_at: review.created_at.toISOString() };
+      });
+    return request(app)
+      .get(`/api/reviews?category=${category}`)
+      .expect(200)
+      .then((res) => {
+        const { reviews } = res.body;
+        for (let i = 0; i < reviews.length; i++) {
+          let reviewToCheck = reviews[i];
+          delete reviewToCheck.review_id;
+          expect(reviewToCheck).toEqual(matchingReviews[i]);
+        }
+      });
   });
   // it("returns 400 bad request for category doesn't exist", () => {
   //   return request(app).get(`/api/reviews/?category=UHBJHV&*&`).expect(400);
