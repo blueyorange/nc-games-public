@@ -5,6 +5,7 @@ const request = require("supertest");
 const app = require("../app");
 const { idleTimeoutMillis } = require("pg/lib/defaults");
 const { get } = require("express/lib/response");
+require("jest-sorted");
 
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
@@ -147,12 +148,15 @@ describe("PATCH /api/reviews/:review_id", () => {
 });
 
 describe("GET /api/reviews", () => {
-  it("returns an array of objects with matching fields", () => {
+  it("returns an array of objects with matching fields sorted by created_at, desc", () => {
     return request(app)
       .get("/api/reviews/")
       .expect(200)
       .then((res) => {
         expect(res.body.reviews).toBeInstanceOf(Array);
+        expect(res.body.reviews).toBeSortedBy("created_at", {
+          descending: true,
+        });
         expect(res.body.reviews.length).toBeGreaterThan(0);
         res.body.reviews.forEach((review) => {
           expect(review).toMatchObject({
@@ -180,14 +184,7 @@ describe("GET /api/reviews", () => {
       .get(`/api/reviews/?sort_by=${sort_by}`)
       .expect(200)
       .then((res) => {
-        const { reviews } = res.body;
-        for (let i = 0; i < reviews.length; i++) {
-          let reviewToCheck = reviews[i];
-          delete reviewToCheck.review_id;
-          expect(reviewToCheck.review_body).toEqual(
-            reviewsSorted[i].review_body
-          );
-        }
+        expect(res.body.reviews).toBeSortedBy(sort_by, { descending: true });
       });
   });
 
@@ -199,7 +196,7 @@ describe("GET /api/reviews", () => {
     return request(app).get(`/api/reviews/?order=invalid`).expect(400);
   });
 
-  it("returns reviews matching category", () => {
+  it("status 200 accepts category query", () => {
     const category = "dexterity";
     const matchingReviews = reviewData
       .filter((review) => review.category === category)
@@ -219,9 +216,26 @@ describe("GET /api/reviews", () => {
         }
       });
   });
-  // it("returns 400 bad request for category doesn't exist", () => {
-  //   return request(app).get(`/api/reviews/?category=UHBJHV&*&`).expect(400);
-  // });
+  it("status 200 accepts order query", () => {
+    return request(app)
+      .get(`/api/reviews?order=ASC`)
+      .expect(200)
+      .then((res) => {
+        expect(res.body.reviews).toBeSortedBy("created_at");
+      });
+  });
+  it("status 404 non-existent category query", () => {
+    return request(app).get(`/api/reviews/?category=bananas`).expect(404);
+  });
+
+  it("status 200 valid category but no associated reviews returns empty array", () => {
+    return request(app)
+      .get("/api/reviews?category=children's%20games")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.reviews).toEqual([]);
+      });
+  });
 });
 
 describe("GET /api/reviews/:review_id/comments", () => {
@@ -243,6 +257,14 @@ describe("GET /api/reviews/:review_id/comments", () => {
         });
         expect(comments).toEqual(expectedComments);
       });
+  });
+
+  it("status 400 invalid ID", () => {
+    return request(app).get("/api/reviews/invalid_id/comments").expect(400);
+  });
+
+  it("status 404 non existent ID", () => {
+    return request(app).get("/api/reviews/99999/comments").expect(404);
   });
 });
 

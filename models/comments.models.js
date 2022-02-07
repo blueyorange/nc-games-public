@@ -1,10 +1,21 @@
 const db = require("../db/connection");
 const format = require("pg-format");
 
-exports.selectCommentsByReviewId = (review_id) => {
+exports.selectCommentsByReviewId = async (review_id) => {
   return db
-    .query(`SELECT * FROM comments WHERE review_id=$1`, [review_id])
-    .then((result) => result.rows);
+    .query(`SELECT * FROM reviews WHERE review_id=$1`, [review_id])
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "non-existant review id" });
+      }
+    })
+    .then(() => {
+      return db
+        .query(`SELECT * FROM comments WHERE review_id=$1`, [review_id])
+        .then((result) => {
+          return result.rows;
+        });
+    });
 };
 
 exports.createComment = (review_id, author, body) => {

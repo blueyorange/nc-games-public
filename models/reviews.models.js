@@ -2,7 +2,7 @@ const db = require("../db/connection");
 const format = require("pg-format");
 const { rows } = require("pg/lib/defaults");
 
-exports.selectReview = async (review_id) => {
+exports.selectReview = (review_id) => {
   return db
     .query(
       `
@@ -29,7 +29,15 @@ exports.amendReview = (review_id, inc_votes) => {
   return db.query(sql).then((result) => result.rows[0]);
 };
 
-exports.selectAllReviews = (sort_by, order, category) => {
+exports.selectAllReviews = async (sort_by, order, category) => {
+  if (category !== undefined) {
+    const numCategories = await db
+      .query(`SELECT * FROM categories WHERE slug=$1`, [category])
+      .then((result) => result.rowCount);
+    if (!numCategories) {
+      return Promise.reject({ status: 404, msg: "no matching category" });
+    }
+  }
   let sql = `SELECT *, (
     SELECT COUNT(*)::int FROM comments WHERE comments.review_id=reviews.review_id
     )

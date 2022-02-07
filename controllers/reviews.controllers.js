@@ -8,7 +8,6 @@ exports.getReviewById = (req, res, next) => {
   const { review_id } = req.params;
   selectReview(review_id)
     .then((review) => {
-      // review = {comment_count:0} for review not found
       if (review === undefined) {
         return Promise.reject({ status: 404, msg: "not found" });
       } else {
@@ -36,14 +35,14 @@ exports.updateReviewById = (req, res, next) => {
 
 exports.getAllReviews = (req, res, next) => {
   let { sort_by, order, category } = req.query;
-  if (order === undefined) order = "ASC";
+  if (order === undefined) order = "DESC";
   if (!["asc", "desc"].includes(order.toLowerCase())) {
     return next({
       status: 400,
       msg: "bad order by query",
     });
   }
-  if (sort_by === undefined) sort_by = "review_id";
+  if (sort_by === undefined) sort_by = "created_at";
   const columns = [
     "review_id",
     "title",
