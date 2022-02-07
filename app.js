@@ -6,6 +6,8 @@ const {
   handleCustomErrors,
   handle404errors,
 } = require("./errors.js");
+const cors = require("cors");
+app.use(cors());
 app.use(express.json());
 app.use("/api", apiRouter);
 app.all("*", (req, res) => {
