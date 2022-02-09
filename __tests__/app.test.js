@@ -344,12 +344,17 @@ describe("GET /api/users/", () => {
 });
 
 describe("GET /api/users/:username", () => {
-  it("200: returns a single user's data", () => {
+  it("200: returns a single user's data including an array containing their reviews", () => {
     return request(app)
       .get("/api/users/mallionaire")
       .expect(200)
       .then((res) => {
-        expect(res.body.user).toBeInstanceOf(Object);
+        expect(res.body.user).toMatchObject({
+          username: expect.any(String),
+          name: expect.any(String),
+          avatar_url: expect.any(String),
+          reviews: expect.any(Array),
+        });
       });
   });
   it("404: user not found", () => {
