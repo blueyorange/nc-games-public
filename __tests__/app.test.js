@@ -331,3 +331,14 @@ describe("DELETE /api/comments/:comment_id", () => {
     return request(app).delete(`/api/comments/1000`).expect(404);
   });
 });
+
+describe("GET /api/users/", () => {
+  it("status 200: returns an array of users", () => {
+    return request(app)
+      .get("/api/users/")
+      .expect(200)
+      .then((res) => {
+        expect(res.body).toBeInstanceOf(Array);
+      });
+  });
+});
