@@ -342,3 +342,17 @@ describe("GET /api/users/", () => {
       });
   });
 });
+
+describe("GET /api/users/:username", () => {
+  it("200: returns a single user's data", () => {
+    return request(app)
+      .get("/api/users/mallionaire")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.user).toBeInstanceOf(Object);
+      });
+  });
+  it("404: user not found", () => {
+    return request(app).get("/api/users/invalid_username").expect(404);
+  });
+});
