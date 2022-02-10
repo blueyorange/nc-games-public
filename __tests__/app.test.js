@@ -3,8 +3,6 @@ const testData = require("../db/data/test-data/index.js");
 const seed = require("../db/seeds/seed.js");
 const request = require("supertest");
 const app = require("../app");
-const { idleTimeoutMillis } = require("pg/lib/defaults");
-const { get } = require("express/lib/response");
 require("jest-sorted");
 
 beforeEach(() => seed(testData));
@@ -79,7 +77,6 @@ describe("PATCH /api/reviews/:review_id", () => {
         expect(res.body.review.votes).toEqual(newVotes);
       });
   });
-
   it("decreases the number of votes when valid body posted", () => {
     const inc_votes = -3;
     const testReview = reviewData[0];
@@ -362,5 +359,21 @@ describe("GET /api/users/:username", () => {
   });
   it("404: user not found", () => {
     return request(app).get("/api/users/invalid_username").expect(404);
+  });
+});
+
+describe("PATCH /api/comments/:comment_id", () => {
+  it("200: increases the number of votes by inc_votes", () => {
+    const currVotes = commentData[0].votes;
+    return request(app)
+      .patch("/api/comments/1")
+      .expect(200)
+      .send({ inc_votes: 1 })
+      .then((res) => {
+        expect(res.body.comment.votes).toBe(currVotes + 1);
+      });
+  });
+  it("404: comment not found", () => {
+    return request(app).patch("/api/comments/9999999").expect(404);
   });
 });
