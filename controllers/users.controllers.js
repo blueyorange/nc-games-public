@@ -9,7 +9,6 @@ exports.getUserByUsername = (req, res, next) => {
   const { username } = req.params;
   selectUserByUsername(username)
     .then((user) => {
-      console.log(user);
       if (user === undefined) {
         return Promise.reject({ status: 404, msg: "user not found" });
       } else {

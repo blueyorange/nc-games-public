@@ -11,7 +11,13 @@ exports.selectCommentsByReviewId = async (review_id) => {
     })
     .then(() => {
       return db
-        .query(`SELECT * FROM comments WHERE review_id=$1`, [review_id])
+        .query(
+          `SELECT comments.*,users.avatar_url 
+        FROM comments 
+        LEFT JOIN users ON comments.author=users.username
+        WHERE review_id=$1`,
+          [review_id]
+        )
         .then((result) => {
           return result.rows;
         });

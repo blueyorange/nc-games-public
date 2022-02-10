@@ -251,11 +251,14 @@ describe("GET /api/reviews/:review_id/comments", () => {
       .expect(200)
       .then((res) => {
         expect(res.body.comments).toBeInstanceOf(Array);
-        const comments = res.body.comments.map((comment) => {
-          delete comment.comment_id;
-          return comment;
+        res.body.comments.forEach((comment) => {
+          expect(comment).toMatchObject({
+            author: expect.any(String),
+            avatar_url: expect.any(String),
+            body: expect.any(String),
+            created_at: expect.any(String),
+          });
         });
-        expect(comments).toEqual(expectedComments);
       });
   });
 
