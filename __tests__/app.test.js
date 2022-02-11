@@ -269,7 +269,7 @@ describe("GET /api/reviews/:review_id/comments", () => {
 });
 
 describe("POST /api/reviews/:review_id/comments/", () => {
-  const review_id = 1;
+  const review_id = 3;
   const comment = {
     username: "mallionaire",
     body: "i HATE this game.",
@@ -280,12 +280,15 @@ describe("POST /api/reviews/:review_id/comments/", () => {
       .send(comment)
       .expect(200)
       .then((res) => {
-        expect(res.body.comment).toMatchObject({
-          author: comment.username,
-          body: comment.body,
-          comment_id: expect.any(Number),
-          votes: 0,
-          created_at: expect.any(String),
+        expect(res.body.comments).toBeInstanceOf(Array);
+        res.body.comments.forEach((comment) => {
+          expect(comment).toMatchObject({
+            author: expect.any(String),
+            body: expect.any(String),
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+          });
         });
       });
   });

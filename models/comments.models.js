@@ -26,10 +26,12 @@ exports.selectCommentsByReviewId = async (review_id) => {
 
 exports.createComment = (review_id, author, body) => {
   const sql = format(
-    `INSERT INTO comments (review_id, author, body) VALUES (%L) RETURNING *`,
-    [review_id, author, body]
+    `INSERT INTO comments (review_id, author, body) VALUES (%L); 
+    SELECT * FROM comments WHERE review_id=%L;`,
+    [review_id, author, body],
+    review_id
   );
-  return db.query(sql).then((result) => result.rows[0]);
+  return db.query(sql).then((result) => result[1].rows);
 };
 
 exports.deleteComment = (comment_id) => {
