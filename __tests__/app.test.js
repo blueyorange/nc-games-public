@@ -271,7 +271,7 @@ describe("GET /api/reviews/:review_id/comments", () => {
 describe("POST /api/reviews/:review_id/comments/", () => {
   const review_id = 3;
   const comment = {
-    username: "mallionaire",
+    author: "mallionaire",
     body: "i HATE this game.",
   };
   it("returns an array of comments from a review_id", () => {
@@ -292,20 +292,20 @@ describe("POST /api/reviews/:review_id/comments/", () => {
         });
       });
   });
-  it("returns 400 not found for incorrect review id", () => {
+  it("returns 404 not found for incorrect review id", () => {
     const review_id = 999999;
     return request(app)
       .post(`/api/reviews/${review_id}/comments/`)
       .send(comment)
       .expect(400);
   });
-  it("returns error 400 for invalid review id", () => {
+  it("returns error 400 bad request for invalid review id", () => {
     return request(app)
       .post(`/api/reviews/:invalid_id/comments/`)
       .send(comment)
       .expect(400);
   });
-  it("returns error 400 not found for invalid username", () => {
+  it("returns error 400 bad request for invalid username", () => {
     let comment_invalid = { username: "invalid", body: "ooooh" };
     return request(app)
       .post(`/api/reviews/${review_id}/comments/`)
