@@ -53,6 +53,7 @@ exports.getAllReviews = (req, res, next) => {
     "category",
     "created_at",
     "votes",
+    "comment_count",
   ];
   if (!columns.includes(sort_by)) {
     next({
