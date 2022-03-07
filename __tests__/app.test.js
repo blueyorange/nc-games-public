@@ -388,7 +388,27 @@ describe("PATCH /api/comments/:comment_id", () => {
         expect(res.body.comment.votes).toBe(currVotes + 1);
       });
   });
+  it("400: invalid id", () => {
+    return request(app).patch("/api/comments/not-an-id").expect(400);
+  });
   it("404: comment not found", () => {
     return request(app).patch("/api/comments/9999999").expect(404);
+  });
+  it("400: invalid inc_votes", () => {
+    const currVotes = commentData[0].votes;
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: "I should be a number!" })
+      .expect(400);
+  });
+  it("200: missing inc_votes key, no effect to comment", () => {
+    const currVotes = commentData[0].votes;
+    return request(app)
+      .patch("/api/comments/1")
+      .expect(200)
+      .send({})
+      .then((res) => {
+        expect(res.body.comment.votes).toBe(currVotes);
+      });
   });
 });

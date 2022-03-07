@@ -39,8 +39,7 @@ exports.deleteCommentById = (req, res, next) => {
 
 exports.updateCommentById = (req, res, next) => {
   const { comment_id } = req.params;
-  // increase vote by 1 if no inc given
-  const inc_votes = req.body.inc_votes ? req.body.inc_votes : 1;
+  const inc_votes = req.body.inc_votes || 0;
   amendComment(comment_id, inc_votes)
     .then((comment) => {
       if (comment === undefined) {
