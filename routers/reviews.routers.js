@@ -8,8 +8,7 @@ const {
 const commentRouter = require("./comments.routers.js");
 
 reviewRouter.use("/:review_id/comments", commentRouter);
-reviewRouter.get("/:review_id", getReviewById, commentRouter);
-reviewRouter.patch("/:review_id", updateReviewById);
+reviewRouter.route("/:review_id").get(getReviewById).patch(updateReviewById);
 reviewRouter.get("/", getAllReviews);
 
 module.exports = reviewRouter;
