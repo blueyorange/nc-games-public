@@ -13,7 +13,6 @@ app.use("/api", apiRouter);
 app.all("*", (req, res) => {
   res.status(400).send({ msg: "invalid endpoint" });
 });
-
 app.use(handle404errors);
 app.use(handlePsqlErrors);
 app.use(handleCustomErrors);

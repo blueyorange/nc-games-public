@@ -11,10 +11,22 @@ This is an api to serve reviews of board games. Users may post reviews, whicha a
 
 Created using node v17.1.0 and Postgres v14.1
 Clone using:
+
+```
 git clone https://github.com/blueyorange/be-nc-games.git
+```
+
+After installing PostGres, create the database with the command
+
+```
+psql -f db/setup.sql
+```
 
 Install dependencies using
-`npm install`
+
+```
+npm install
+```
 
 Create .env files in root:
 .env.development should contain the line `PGDATABASE=nc_games`
