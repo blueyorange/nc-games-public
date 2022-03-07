@@ -108,7 +108,7 @@ describe("PATCH /api/reviews/:review_id", () => {
   });
 
   it("returns 400 for invalid inc_votes", () => {
-    const invalidBody = { inc_votes: "yourmama" };
+    const invalidBody = { inc_votes: "invalid" };
     return request(app).patch("/api/reviews/1").send(invalidBody).expect(400);
   });
 
@@ -140,6 +140,16 @@ describe("PATCH /api/reviews/:review_id", () => {
       .expect(200)
       .then((res) => {
         expect(res.body.review).toEqual(review);
+      });
+  });
+  it("200: amends review if review_body present", () => {
+    const review_body = "amended!";
+    return request(app)
+      .patch("/api/reviews/1")
+      .expect(200)
+      .send({ review_body })
+      .then((res) => {
+        expect(res.body.review.review_body).toBe(review_body);
       });
   });
 });

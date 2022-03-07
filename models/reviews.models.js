@@ -20,12 +20,22 @@ exports.selectReview = (review_id) => {
     });
 };
 
-exports.amendReview = (review_id, inc_votes) => {
-  const sql = format(
-    `UPDATE reviews SET votes=votes+%L WHERE review_id=%L RETURNING *`,
-    inc_votes,
-    review_id
-  );
+exports.amendReview = (review_id, inc_votes, review_body) => {
+  let sql;
+  if (review_body) {
+    sql = format(
+      `UPDATE reviews SET votes=votes+%L, review_body=%L WHERE review_id=%L RETURNING *`,
+      inc_votes,
+      review_body,
+      review_id
+    );
+  } else {
+    sql = format(
+      `UPDATE reviews SET votes=votes+%L WHERE review_id=%L RETURNING *`,
+      inc_votes,
+      review_id
+    );
+  }
   return db.query(sql).then((result) => result.rows[0]);
 };
 

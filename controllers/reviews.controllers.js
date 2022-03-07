@@ -22,7 +22,8 @@ exports.getReviewById = (req, res, next) => {
 exports.updateReviewById = (req, res, next) => {
   const { review_id } = req.params;
   const inc_votes = req.body.inc_votes ? req.body.inc_votes : 0;
-  amendReview(review_id, inc_votes)
+  const { review_body } = req.body;
+  amendReview(review_id, inc_votes, review_body)
     .then((review) => {
       if (review === undefined) {
         return Promise.reject({ status: 404, msg: "not found" });
