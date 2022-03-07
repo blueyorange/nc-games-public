@@ -345,7 +345,15 @@ describe("GET /api/users/", () => {
       .get("/api/users/")
       .expect(200)
       .then((res) => {
-        expect(res.body).toBeInstanceOf(Array);
+        expect(res.body).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            }),
+          ])
+        );
       });
   });
 });
