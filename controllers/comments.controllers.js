@@ -20,7 +20,7 @@ exports.postComment = (req, res, next) => {
   const { review_id } = req.params;
   const { author, body } = req.body;
   createComment(review_id, author, body)
-    .then((comments) => res.status(200).send({ comments }))
+    .then((comments) => res.status(201).send({ comments }))
     .catch((err) => next(err));
 };
 

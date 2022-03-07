@@ -278,7 +278,7 @@ describe("POST /api/reviews/:review_id/comments/", () => {
     return request(app)
       .post(`/api/reviews/${review_id}/comments/`)
       .send(comment)
-      .expect(200)
+      .expect(201)
       .then((res) => {
         expect(res.body.comments).toBeInstanceOf(Array);
         res.body.comments.forEach((comment) => {
