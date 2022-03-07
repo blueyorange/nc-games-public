@@ -273,8 +273,9 @@ describe("POST /api/reviews/:review_id/comments/", () => {
   const comment = {
     author: "mallionaire",
     body: "i HATE this game.",
+    invalid_field: "yaar I be a pirate",
   };
-  it("returns an array of comments from a review_id", () => {
+  it("201 returns an array of comments from a review_id and ignores unnecessary properties", () => {
     return request(app)
       .post(`/api/reviews/${review_id}/comments/`)
       .send(comment)
@@ -297,7 +298,7 @@ describe("POST /api/reviews/:review_id/comments/", () => {
     return request(app)
       .post(`/api/reviews/${review_id}/comments/`)
       .send(comment)
-      .expect(400);
+      .expect(404);
   });
   it("returns error 400 bad request for invalid review id", () => {
     return request(app)
@@ -330,8 +331,11 @@ describe("DELETE /api/comments/:comment_id", () => {
         expect(commentQuery.rows).toEqual([]);
       });
   });
-  it("status 404 for invalid comment_id", () => {
+  it("status 404 for non existant comment_id", () => {
     return request(app).delete(`/api/comments/1000`).expect(404);
+  });
+  it("status 400 for invalid comment_id", () => {
+    return request(app).delete(`/api/comments/invalid_id`).expect(400);
   });
 });
 
@@ -361,7 +365,7 @@ describe("GET /api/users/:username", () => {
       });
   });
   it("404: user not found", () => {
-    return request(app).get("/api/users/invalid_username").expect(404);
+    return request(app).get("/api/users/non-user").expect(404);
   });
 });
 

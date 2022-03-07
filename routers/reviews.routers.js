@@ -5,14 +5,10 @@ const {
   getAllReviews,
 } = require("../controllers/reviews.controllers");
 
-const {
-  postComment,
-  getCommentsByReviewId,
-} = require("../controllers/comments.controllers");
+const commentRouter = require("./comments.routers.js");
 
-reviewRouter.post("/:review_id/comments", postComment);
-reviewRouter.get("/:review_id", getReviewById);
-reviewRouter.get("/:review_id/comments", getCommentsByReviewId);
+reviewRouter.use("/:review_id/comments", commentRouter);
+reviewRouter.get("/:review_id", getReviewById, commentRouter);
 reviewRouter.patch("/:review_id", updateReviewById);
 reviewRouter.get("/", getAllReviews);
 

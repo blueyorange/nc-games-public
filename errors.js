@@ -9,7 +9,10 @@ exports.handle404errors = (err, req, res, next) => {
 };
 
 exports.handlePsqlErrors = (err, req, res, next) => {
-  if (err.code === "23503" || err.code === "22P02" || err.code === "23502") {
+  if (err.code === "23503") {
+    res.status(404).send({ msg: err.details });
+  }
+  if (err.code === "22P02" || err.code === "23502") {
     res.status(400).send({ msg: err.details });
   } else {
     next(err);
