@@ -20,13 +20,6 @@ exports.selectUserByUsername = async (username) => {
     });
 };
 
-function sqlasdas(strings, ...keys) {
-  let output = "";
-  for (const [i, str] of strings) {
-    output += str + format(key);
-  }
-}
-
 exports.amendUser = (username, data) => {
   let sql = `
   UPDATE users
