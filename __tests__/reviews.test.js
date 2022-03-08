@@ -1,37 +1,14 @@
-const db = require("../db/connection.js");
-const testData = require("../db/data/test-data/index.js");
-const seed = require("../db/seeds/seed.js");
 const request = require("supertest");
 const app = require("../app");
+const testData = require("../db/data/test-data/index.js");
+const db = require("../db/connection.js");
+const seed = require("../db/seeds/seed.js");
 require("jest-sorted");
 
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
-const { categoryData, reviewData, commentData, userData } = testData;
-
-describe("GET /api", () => {
-  it("serves a description of the api", () => {
-    return request(app).get("/api").expect(200);
-  });
-});
-describe("GET /api/categories", () => {
-  it("matches the test data returns an array of objects with matching fields", () => {
-    return request(app)
-      .get("/api/categories")
-      .expect(200)
-      .then((res) => {
-        expect(res.body.categories).toEqual(categoryData);
-        expect(res.body.categories.length).toBeGreaterThan(0);
-        res.body.categories.forEach((category) => {
-          expect(category).toMatchObject({
-            slug: expect.any(String),
-            description: expect.any(String),
-          });
-        });
-      });
-  });
-});
+const { reviewData, commentData } = testData;
 
 describe("GET /api/reviews/:review_id", () => {
   it("matches the test data in form and content (an array of objects)", () => {
@@ -322,157 +299,5 @@ describe("POST /api/reviews/:review_id/comments/", () => {
       .post(`/api/reviews/${review_id}/comments/`)
       .send(comment_invalid)
       .expect(400);
-  });
-});
-
-describe("DELETE /api/comments/:comment_id", () => {
-  it("should return 204 and result in deleted entry", () => {
-    const comment_id = 1;
-    return request(app)
-      .delete(`/api/comments/${comment_id}`)
-      .expect(204)
-      .then(async (res) => {
-        expect(res.body).toEqual({});
-        const commentQuery = await db.query(
-          `SELECT * FROM comments WHERE comment_id=$1`,
-          [comment_id]
-        );
-        // comment is deleted so should return empty query
-        expect(commentQuery.rows).toEqual([]);
-      });
-  });
-  it("status 404 for non existant comment_id", () => {
-    return request(app).delete(`/api/comments/1000`).expect(404);
-  });
-  it("status 400 for invalid comment_id", () => {
-    return request(app).delete(`/api/comments/invalid_id`).expect(400);
-  });
-});
-
-describe("GET /api/users/", () => {
-  it("status 200: returns an array of users", () => {
-    return request(app)
-      .get("/api/users/")
-      .expect(200)
-      .then((res) => {
-        expect(res.body).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({
-              username: expect.any(String),
-              name: expect.any(String),
-              avatar_url: expect.any(String),
-            }),
-          ])
-        );
-      });
-  });
-});
-
-describe("GET /api/users/:username", () => {
-  it("200: returns a single user's data including an array containing their reviews", () => {
-    return request(app)
-      .get("/api/users/mallionaire")
-      .expect(200)
-      .then((res) => {
-        expect(res.body.user).toMatchObject({
-          username: expect.any(String),
-          name: expect.any(String),
-          avatar_url: expect.any(String),
-          reviews: expect.any(Array),
-        });
-      });
-  });
-  it("404: user not found", () => {
-    return request(app).get("/api/users/non-user").expect(404);
-  });
-});
-
-describe("PATCH /api/users/:username", () => {
-  const name = "harry";
-  it("200: amends name of user", () => {
-    return request(app)
-      .patch("/api/users/mallionaire")
-      .send({ name })
-      .expect(200)
-      .then((res) => {
-        const { user } = res.body;
-        expect(user).toEqual(expect.objectContaining({ name }));
-      });
-  });
-  it("200: amends name and avatar_url of user", () => {
-    const name = "harry";
-    const avatar_url = "http://www.myavatar.com/aihrpiwoenk";
-    return request(app)
-      .patch("/api/users/mallionaire")
-      .send({ name, avatar_url })
-      .expect(200)
-      .then((res) => {
-        const { user } = res.body;
-        expect(user).toEqual(expect.objectContaining({ name, avatar_url }));
-      });
-  });
-  it("200: avatar_url of user only", () => {
-    const avatar_url = "http://www.myavatar.com/aihrpiwoenk";
-    return request(app)
-      .patch("/api/users/mallionaire")
-      .send({ avatar_url })
-      .expect(200)
-      .then((res) => {
-        const { user } = res.body;
-        expect(user).toEqual(expect.objectContaining({ avatar_url }));
-      });
-  });
-  it("400: badly formed request body", () => {
-    const invalid_field = "INVALID";
-    return request(app)
-      .patch("/api/users/mallionaire")
-      .send({ invalid_field })
-      .expect(400);
-  });
-});
-
-describe("PATCH /api/comments/:comment_id", () => {
-  it("200: increases the number of votes by inc_votes", () => {
-    const currVotes = commentData[0].votes;
-    return request(app)
-      .patch("/api/comments/1")
-      .expect(200)
-      .send({ inc_votes: 1 })
-      .then((res) => {
-        expect(res.body.comment.votes).toBe(currVotes + 1);
-      });
-  });
-  it("400: invalid id", () => {
-    return request(app).patch("/api/comments/not-an-id").expect(400);
-  });
-  it("404: comment not found", () => {
-    return request(app).patch("/api/comments/9999999").expect(404);
-  });
-  it("400: invalid inc_votes", () => {
-    const currVotes = commentData[0].votes;
-    return request(app)
-      .patch("/api/comments/1")
-      .send({ inc_votes: "I should be a number!" })
-      .expect(400);
-  });
-  it("200: missing inc_votes key, no effect to comment", () => {
-    const currVotes = commentData[0].votes;
-    return request(app)
-      .patch("/api/comments/1")
-      .expect(200)
-      .send({})
-      .then((res) => {
-        expect(res.body.comment.votes).toBe(currVotes);
-      });
-  });
-  it("200: amends comment if body present", () => {
-    const body = "amended!";
-    return request(app)
-      .patch("/api/comments/1")
-      .expect(200)
-      .send({ body })
-      .then((res) => {
-        expect(res.body.comment.body).toBe(body);
-      });
   });
 });
