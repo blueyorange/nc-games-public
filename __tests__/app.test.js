@@ -411,6 +411,17 @@ describe("PATCH /api/users/:username", () => {
         expect(user).toEqual(expect.objectContaining({ name, avatar_url }));
       });
   });
+  it("200: avatar_url of user only", () => {
+    const avatar_url = "http://www.myavatar.com/aihrpiwoenk";
+    return request(app)
+      .patch("/api/users/mallionaire")
+      .send({ avatar_url })
+      .expect(200)
+      .then((res) => {
+        const { user } = res.body;
+        expect(user).toEqual(expect.objectContaining({ avatar_url }));
+      });
+  });
   it("400: badly formed request body", () => {
     const invalid_field = "INVALID";
     return request(app)
