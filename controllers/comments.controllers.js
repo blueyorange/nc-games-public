@@ -40,7 +40,8 @@ exports.deleteCommentById = (req, res, next) => {
 exports.updateCommentById = (req, res, next) => {
   const { comment_id } = req.params;
   const inc_votes = req.body.inc_votes || 0;
-  amendComment(comment_id, inc_votes)
+  const { body } = req.body;
+  amendComment(comment_id, inc_votes, body)
     .then((comment) => {
       if (comment === undefined) {
         return Promise.reject({ status: 404, msg: "not found" });

@@ -387,6 +387,39 @@ describe("GET /api/users/:username", () => {
   });
 });
 
+describe("PATCH /api/users/:username", () => {
+  const name = "harry";
+  it("200: amends name of user", () => {
+    return request(app)
+      .patch("/api/users/mallionaire")
+      .send({ name })
+      .expect(200)
+      .then((res) => {
+        const { user } = res.body;
+        expect(user).toEqual(expect.objectContaining({ name }));
+      });
+  });
+  it("200: amends name and avatar_url of user", () => {
+    const name = "harry";
+    const avatar_url = "http://www.myavatar.com/aihrpiwoenk";
+    return request(app)
+      .patch("/api/users/mallionaire")
+      .send({ name, avatar_url })
+      .expect(200)
+      .then((res) => {
+        const { user } = res.body;
+        expect(user).toEqual(expect.objectContaining({ name, avatar_url }));
+      });
+  });
+  it("400: badly formed request body", () => {
+    const invalid_field = "INVALID";
+    return request(app)
+      .patch("/api/users/mallionaire")
+      .send({ invalid_field })
+      .expect(400);
+  });
+});
+
 describe("PATCH /api/comments/:comment_id", () => {
   it("200: increases the number of votes by inc_votes", () => {
     const currVotes = commentData[0].votes;
@@ -419,6 +452,16 @@ describe("PATCH /api/comments/:comment_id", () => {
       .send({})
       .then((res) => {
         expect(res.body.comment.votes).toBe(currVotes);
+      });
+  });
+  it("200: amends comment if body present", () => {
+    const body = "amended!";
+    return request(app)
+      .patch("/api/comments/1")
+      .expect(200)
+      .send({ body })
+      .then((res) => {
+        expect(res.body.comment.body).toBe(body);
       });
   });
 });

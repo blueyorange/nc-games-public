@@ -39,11 +39,21 @@ exports.deleteComment = (comment_id) => {
   return db.query(`DELETE FROM comments WHERE comment_id=$1`, [comment_id]);
 };
 
-exports.amendComment = (comment_id, inc_votes) => {
-  const sql = format(
-    `UPDATE comments SET votes=votes+%L WHERE comment_id=%L RETURNING *`,
-    inc_votes,
-    comment_id
-  );
+exports.amendComment = (comment_id, inc_votes, body) => {
+  let sql;
+  if (body) {
+    sql = format(
+      `UPDATE comments SET votes=votes+%L, body=%L WHERE comment_id=%L RETURNING *`,
+      inc_votes,
+      body,
+      comment_id
+    );
+  } else {
+    sql = format(
+      `UPDATE comments SET votes=votes+%L WHERE comment_id=%L RETURNING *`,
+      inc_votes,
+      comment_id
+    );
+  }
   return db.query(sql).then((result) => result.rows[0]);
 };

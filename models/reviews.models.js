@@ -1,6 +1,5 @@
 const db = require("../db/connection");
 const format = require("pg-format");
-const { rows } = require("pg/lib/defaults");
 
 exports.selectReview = (review_id) => {
   return db
@@ -22,19 +21,21 @@ exports.selectReview = (review_id) => {
 
 exports.amendReview = (review_id, inc_votes, review_body) => {
   let sql;
-  if (review_body) {
+  try {
     sql = format(
-      `UPDATE reviews SET votes=votes+%L, review_body=%L WHERE review_id=%L RETURNING *`,
+      `
+      UPDATE reviews
+      SET votes=votes+%L
+      `,
       inc_votes,
-      review_body,
-      review_id
+      review_body
     );
-  } else {
-    sql = format(
-      `UPDATE reviews SET votes=votes+%L WHERE review_id=%L RETURNING *`,
-      inc_votes,
-      review_id
-    );
+    if (review_body) {
+      sql += format(`, review_body=%L`, review_body);
+    }
+    sql += format(`WHERE review_id=%L RETURNING *`, review_id);
+  } catch (err) {
+    console.log(err);
   }
   return db.query(sql).then((result) => result.rows[0]);
 };

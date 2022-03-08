@@ -1,3 +1,4 @@
+const format = require("pg-format");
 const db = require("../db/connection");
 
 exports.selectUsers = () =>
@@ -17,4 +18,26 @@ exports.selectUserByUsername = async (username) => {
       const user = { ...result.rows[0], reviews };
       return user;
     });
+};
+
+function sqlasdas(strings, ...keys) {
+  let output = "";
+  for (const [i, str] of strings) {
+    output += str + format(key);
+  }
+}
+
+exports.amendUser = (username, data) => {
+  let sql = `
+  UPDATE users
+  SET `;
+  for (const key in data) {
+    const value = data[key];
+    if (value) {
+      sql += format(`%I=%L,`, key, value);
+    }
+  }
+  sql = sql.slice(0, -1);
+  sql += format(" WHERE username=%L RETURNING *", username);
+  return db.query(sql).then((result) => result.rows[0]);
 };

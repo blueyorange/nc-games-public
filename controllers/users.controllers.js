@@ -1,4 +1,8 @@
-const { selectUsers, selectUserByUsername } = require("../models/users.models");
+const {
+  selectUsers,
+  selectUserByUsername,
+  amendUser,
+} = require("../models/users.models");
 
 exports.getUsers = async (req, res, next) => {
   const users = await selectUsers();
@@ -14,6 +18,16 @@ exports.getUserByUsername = (req, res, next) => {
       } else {
         res.status(200).send({ user });
       }
+    })
+    .catch((err) => next(err));
+};
+
+exports.updateUser = (req, res, next) => {
+  const { username } = req.params;
+  const { name, avatar_url } = req.body;
+  amendUser(username, { name, avatar_url })
+    .then((user) => {
+      res.status(200).send({ user });
     })
     .catch((err) => next(err));
 };
