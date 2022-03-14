@@ -1,7 +1,7 @@
 # My-Game-Reviews
 
 Hosted at:
-https://my-game-reviews.herokuapp.com/
+https://my-game-reviews.herokuapp.com/api
 
 ## Summary
 
